@@ -1,149 +1,127 @@
 package main
 
 import (
-	"database/sql"
+	//"database/sql"
 	"fmt"
-	"log"
-	"net/http"
+	//"log"
+	//"net/http"
 
-	// 	"time"
-	// //	"io/ioutil"
-	// 	"encoding/json"
-	// 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 
-	"github.com/labstack/echo"
+	"mutlicontainer/configuration"
+	"mutlicontainer/repository"
+	"mutlicontainer/service"
+	"mutlicontainer/db"
+
+	"github.com/labstack/echo/v4"
 )
 
-type Product struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-type Products struct {
-	Products []Product `json:"employees"`
-}
+// type Product struct {
+// 	Id   int    `json:"id"`
+// 	Name string `json:"name"`
+// }
+// type Products struct {
+// 	Products []Product `json:"products"`
+// }
 
 
 func main() {
 	port := "8080"
 	var E = echo.New()
-	
-	getDBinstance()
-	E.GET("/", helloworld)
-	E.GET("/product", product)
+
+	// db := db.GetDBinstance()
+
+	// productrepo := repository.NewProductsRepository(db)
+	// productservice := service.NewProductsService(productrepo)
+	// E.GET("/products", productservice.GetDetails)
+	//E.POST("/product", createProduct)
+	// E.PUT("/product/:id", updateproduct)
+	// E.DELETE("/product/:id", deleteproduct)
 	E.Logger.Print(fmt.Sprintf("Listening on port %s", port))
-	E.Logger.Fatal(E.Start(fmt.Sprintf("localhost:%s", port)))
-
-
-	// without fecho
-	//router := mux.NewRouter()
-	// router.HandleFunc("/posts", getProducts).Methods("GET")
-  	// //router.HandleFunc("/post", createProduct).Methods("POST")
-	//  srv := &http.Server{
-	// 	Handler:      router,
-	// 	Addr:         ":8080",
-	// 	ReadTimeout:  10 * time.Second,
-	// 	WriteTimeout: 10 * time.Second,
-	// }
-	// if err := srv.ListenAndServe(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	address := fmt.Sprintf(":%s", port)
+	E.Logger.Fatal(E.Start(address))
 }
 
+// func createProduct(c echo.Context) error {
+// 	u := new(Product)
+// 	if err := c.Bind(u); err != nil {
+// 		return err
+// 	}
+// 	sqlStatement := "INSERT INTO products (id,name)VALUES ($1,$2)"
+// 	res, err := db.Query(sqlStatement, u.Id, u.Name)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	} else {
+// 		fmt.Println(res)
+// 		return c.JSON(http.StatusCreated, u)
+// 	}
+// 	newproduct := Product{}
+// 	newproduct.Id = u.Id
+// 	newproduct.Name = u.Name
+// 	return c.JSON(http.StatusOK, newproduct)
 
-func getDBinstance() sql.DB {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"db", 5432, "root", "root", "root")
-	conn, err := sql.Open("postgres", dsn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = conn.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("db is used=========")
-	//defer conn.Close()
-	return *conn
-}
-
-
-// without echo
-// func getProducts(w http.ResponseWriter, request *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	db := getDBinstance()
-//   var products []Product
-//   result, err := db.Query("SELECT id, name from products")
-//   if err != nil {
-//     panic(err.Error())
-//   }
-//   defer result.Close()
-//   for result.Next() {
-//     var product Product
-//     err := result.Scan(&product.Id, &product.Name)
-//     if err != nil {
-//       panic(err.Error())
-//     }
-//     products = append(products, product)
-//   }
-//   json.NewEncoder(w).Encode(products)
 // }
 
+// func getProduct(c echo.Context) error {
+// 	sqlStatement := "SELECT id, name FROM products order by id"
+// 	rows, err := db.Query(sqlStatement)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	defer rows.Close()
+// 	result := Products{}
 
+// 	for rows.Next() {
+// 		product := Product{}
+// 		err2 := rows.Scan(&product.Id, &product.Name)
+// 		if err2 != nil {
+// 			return err2
+// 		}
+// 		result.Products = append(result.Products, product)
+// 	}
+// 	return c.JSON(http.StatusCreated, result)
+// }
 
+// func updateproduct(c echo.Context) error {
+// 	id := c.Param("id")
+// 	u := new(Product)
+// 	if err := c.Bind(u); err != nil {
+// 		return err
+// 	}
+// 	sqlStatement := "UPDATE products SET name=$1 WHERE id=$2"
+// 	res, err := db.Query(sqlStatement, u.Name, id)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	} else {
+// 		fmt.Println(res)
+// 		return c.JSON(http.StatusCreated, u)
+// 	}
+// 	return c.JSON(http.StatusOK, u)
+// }
 
+// func deleteproduct(c echo.Context) error {
+// 	id := c.Param("id")
+// 	sqlStatement := "DELETE FROM products WHERE id = $1"
+// 	res, err := db.Query(sqlStatement, id)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	} else {
+// 		fmt.Println(res)
+// 		return c.JSON(http.StatusOK, "Deleted")
+// 	}
+// 	return c.String(http.StatusOK, id+"Deleted")
+// }
 
-// helloworld and product is of echo
-
-func helloworld(c echo.Context) error {
-	// db := getDBinstance()
-	// u := new(Product)
-	// if err := c.Bind(u); err != nil {
-	// 	return err
-	// }
-	// sqlStatement := "INSERT INTO products (name)VALUES ($1)"
-	// res, err := db.Query(sqlStatement, u.Name)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// } else {
-	// 	fmt.Println(res)
-	// 	return c.JSON(http.StatusCreated, u)
-	// }
-	return c.String(http.StatusOK, "ok")
-
-}
-
-func product(c echo.Context) error {
-	db := getDBinstance()
-	var id int
-	var name string
-	fmt.Println("hi")
-	userSql := "SELECT id, name FROM products WHERE id = $1"
-	err := db.QueryRow(userSql, 1).Scan(&id, &name)
-	if err != nil {
-		log.Fatal("Failed to execute query: ", err)
-	}
-	user := Product{Id: id, Name: name}
-	fmt.Printf("Hi %s, welcome back!\n", user.Name)
-
-	return c.String(http.StatusOK, "ok")
-	//w.Write([]byte(user.Name))
-}
-
-// without echo
-func testdb(w http.ResponseWriter, request *http.Request) {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"db", 5432, "root", "root", "root")
-	conn, err := sql.Open("postgres", dsn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("connection to pg herr.....")
-	err = conn.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-	w.Write([]byte("success"))
-}
-
-
+// func getDBinstance() sql.DB {
+// 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+// 		"db", 5432, "root", "root", "root")
+// 	conn, err := sql.Open("postgres", dsn)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	err = conn.Ping()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return *conn
+// }
