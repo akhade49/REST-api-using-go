@@ -1,20 +1,46 @@
 package main
 
 import (
-	//"database/sql"
 	"fmt"
-	//"log"
-	//"net/http"
-
+	"mutlicontainer/db"
 	_ "github.com/lib/pq"
 
-	"mutlicontainer/configuration"
-	"mutlicontainer/repository"
-	"mutlicontainer/service"
-	"mutlicontainer/db"
+	 "mutlicontainer/repository"
+	 "mutlicontainer/service"
 
 	"github.com/labstack/echo/v4"
 )
+
+func main() {
+	port := "8080"
+	var E = echo.New()
+
+	newDb := db.NewDatabase()
+	dbc := newDb.GetDBinstance()
+
+	productrepo := repository.NewProductsRepository(dbc)
+	productservice := service.NewProductsService(productrepo)
+	//E.GET("/products",productservice.GetDetails)
+	E.POST("/product", productservice.CreateProduct)
+	// E.PUT("/product/:id", updateproduct)
+	// E.DELETE("/product/:id", deleteproduct)
+	E.Logger.Print(fmt.Sprintf("Listening on port %s", port))
+	address := fmt.Sprintf(":%s", port)
+	E.Logger.Fatal(E.Start(address))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // type Product struct {
 // 	Id   int    `json:"id"`
@@ -23,24 +49,6 @@ import (
 // type Products struct {
 // 	Products []Product `json:"products"`
 // }
-
-
-func main() {
-	port := "8080"
-	var E = echo.New()
-
-	// db := db.GetDBinstance()
-
-	// productrepo := repository.NewProductsRepository(db)
-	// productservice := service.NewProductsService(productrepo)
-	// E.GET("/products", productservice.GetDetails)
-	//E.POST("/product", createProduct)
-	// E.PUT("/product/:id", updateproduct)
-	// E.DELETE("/product/:id", deleteproduct)
-	E.Logger.Print(fmt.Sprintf("Listening on port %s", port))
-	address := fmt.Sprintf(":%s", port)
-	E.Logger.Fatal(E.Start(address))
-}
 
 // func createProduct(c echo.Context) error {
 // 	u := new(Product)

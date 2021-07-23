@@ -1,10 +1,6 @@
 package service
 
 import (
-	// "net/http"
-	// "net/http/httptest"
-
-	//"mutlicontainer/model"
 	"testing"
 	"errors"
 	"mutlicontainer/mock"
@@ -15,20 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// type BikesServiceTestSuite struct {
-// 	mockRepository mock.MockProductsRepository
-// 	mockCtrl       gomock.Controller
-// 	productsService        ProductsService
-// 	context        echo.Context
-// }
-
-
-// func (suite *BikesServiceTestSuite) SetupTest() {
-// 	suite.mockCtrl = gomock.NewController(suite.T())
-// 	suite.mockRepository = mocks.NewMockBikesRepository(suite.mockCtrl)
-// 	suite.service = NewBikesService(suite.mockRepository)
-// 	suite.context = context.Background()
-// }
 
 func TestGetDetailsShouldReturnProductDetails(t *testing.T) {
 	//Arrange
@@ -103,34 +85,3 @@ func TestCreateProductShouldReturnError(t *testing.T) {
 	//Assert
 	assert.Equal(t,expectedError,actualError)
 }
-
-
-
-// func (suite *ProductsServiceTestSuite) TestGetDetailsShouldReturnProductDetails() {
-// 	expectedDetails := model.ProductModelResponse{
-// 		Id: 1,
-// 		Name: "TV",
-// 	}
-// 	db := db.GetDBinstance()
-
-// 	productrepo := repository.NewProductsRepository(db)
-// 	productservice := service.NewProductsService(productrepo)
-
-
-// 	suite.mockRepository.EXPECT().GetDetails(suite.context).Return(expectedDetails, nil)
-// 	details, err := suite.service.GetDetails(suite.context)
-
-// 	suite.Equal(expectedDetails, details)
-// 	suite.Nil(err)
-// }
-
-// func TestGetDetailsShouldReturnErrorIfRepositoryReturnsError() {
-// 	expectedErr := errors.New("repo error")
-// 	suite.mockRepository.EXPECT().GetDetails(suite.context).Return(model.ProductModelResponse{}, expectedErr)
-
-// 	details, err := suite.service.GetDetails(suite.context)
-
-// 	suite.Empty(details)
-// 	suite.Equal(expectedErr, err)
-// }
-

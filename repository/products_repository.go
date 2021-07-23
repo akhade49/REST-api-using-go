@@ -32,20 +32,22 @@ const (
 	insertProductQuery = `INSERT INTO products (id, name) VALUES ($1,$2)`
 )
 
-
 func (b productsRepository) GetDetails(ctx echo.Context) (model.ProductDetails, error) {
 	fmt.Println("Start DB query for product details")
-	rows, _ := b.db.Query(selectProductDetailsQuery)
-
+	rows, err := b.db.Query(selectProductDetailsQuery)
+	if err != nil {
+		println("Query not executed")
+		println(err)
+		return model.ProductDetails{},err
+	}
 	fmt.Println("Executed db query to get product details")
 	defer rows.Close()
-
 	var id int
 	var name string
 	productModels := make([]model.ProductModelResponse, 0)
 	for rows.Next() {
 		if err := rows.Scan(&id, &name); err != nil {
-			fmt.Println(err.Error())
+			return model.ProductDetails{},err
 		}
 		productModel := model.ProductModelResponse{
 			Id:           		id,
@@ -53,8 +55,6 @@ func (b productsRepository) GetDetails(ctx echo.Context) (model.ProductDetails, 
 		}
 		productModels = append(productModels, productModel)
 	}
-
-
 	productDetails := model.ProductDetails{ProductModels: productModels}
 	return productDetails, nil
 }
@@ -69,11 +69,10 @@ func (b productsRepository) CreateProduct(ctx echo.Context) error{
 		println("Query not executed")
 		return err
 	}
-
 	_, err = result.RowsAffected()
-
 	return err
 }
+
 
 
 

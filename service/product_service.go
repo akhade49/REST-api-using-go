@@ -14,8 +14,6 @@ type productsService struct {
 	repository repository.ProductsRepository
 }
 
-
-//extra
 type ProductsService interface {
 	GetDetails(ctx echo.Context) (model.ProductDetails, error)
 	CreateProduct(ctx echo.Context) error
@@ -24,7 +22,6 @@ type ProductsService interface {
 func NewProductsService(productsRepository repository.ProductsRepository) ProductsService {
 	return productsService{productsRepository}
 }
-
 
 func (s productsService) GetDetails(ctx echo.Context) (model.ProductDetails, error) {
 	details, err := s.repository.GetDetails(ctx)
